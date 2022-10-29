@@ -1,123 +1,204 @@
-// 20.Alterar o programa anterior de modo a incluir 4 menus que terão as
+// 20.Alterar o programa anterior de modo a incluir 4 menus que terÃ£o as
 // seguintes finalidades:
-// a. Listar o conteúdo completo do vetor.
+// a. Listar o conteÃºdo completo do vetor.
 
-// b. Solicitar ao usuário um caractere, a ser pesquisado no vetor e
-// informar se o caractere pesquisado existe ou não no vetor
-// informando a posição em que ele está (todas as ocorrências
+// b. Solicitar ao usuÃ¡rio um caractere, a ser pesquisado no vetor e
+// informar se o caractere pesquisado existe ou nÃ£o no vetor
+// informando a posiÃ§Ã£o em que ele estÃ¡ (todas as ocorrÃªncias
 // visto que o caractere pode se repetir).
 
 // c. Pesquisar se existe no vetor um caractere informado pelo
-// usuário e informar qual a posição da última ocorrência desse
-// caractere (visto que um mesmo caractere poderá se repetir).
+// usuÃ¡rio e informar qual a posiÃ§Ã£o da Ãºltima ocorrÃªncia desse
+// caractere (visto que um mesmo caractere poderÃ¡ se repetir).
 
 // d. Pesquisar se existe no vetor um caractere informado pelo
-// usuário e informar qual a posição da primeira ocorrência desse
-// caractere (visto que um mesmo caractere poderá se repetir).
+// usuÃ¡rio e informar qual a posiÃ§Ã£o da primeira ocorrÃªncia desse
+// caractere (visto que um mesmo caractere poderÃ¡ se repetir).
 
 SET PROCEDURE TO printarray.prg
 
-
-Function Main()
+function main()
 
     local aVetor := {}
-    local nOpc   := 0
+    local nOpc := 0
+    local cCarac := ""
+    local lRun := .T.
 
-            accept "Digite a opcao desejada:" TO nOpc
-            nOpc := val(nOpc)
+    aVetor := PreencheVet()
 
-    PreencheVet(@aVetor)
+    while lRun
 
-    while nOpc > 1 .and.  nOpc < 5
+        ACCEPT "Digite um caracter: " to cCarac
+        cCarac := UPPER(cCarac)
 
-        QOUT("1 - Lista o conteudo do vetor: ")
-        QOUT("2 - Descubra se um caracter esta no vetor")
-        QOUT("3 - Encontre a ultima ocorrencia de um caracter")
-        QOUT("4 - Encontre a primeira ocorrencia de um caracter:")
-        accept "Digite a opcao desejada:" TO nOpc
-            nOpc := val(nOpc)
+        if len(cCarac) > 1 .or. EMPTY(cCarac)
 
-        if nOpc = 1
-            QOUT("")
-            QOUT("O seu vetor tem os caracteres: ")
-            PrintArray(aVetor)
+            ? "INVALID"
 
-        elseif nOpc = 2
-            Encontra(aVetor)
+        else
 
-        elseif nOpc = 3
-            Repetido(aVetor)
-        endif
-    end
-    
+            ? "Opcao 1 - Mostrar Array"
+            ? "Opcao 2 - Quantidade de ocorrencias do elemento"
+            ? "Opcao 3 - Pesquisar existencia e ultima posicao do elemento"
+            ? "Opcao 4 - Pesquisar existencia e primeira posicao do elemento"
+            INPUT "Digite uma opcao a ser realizada : " to nOpc
 
+            lRun := .F.
 
+        ENDIF
 
-Return NIL
+    enddo
 
-Static Function PreencheVet(aVetor)
-    
-    local nI := 0
+    if nOpc = 1
 
-    FOR nI := 1 TO 30
-        aAdd(aVetor, (CHR(hb_RandomInt(65 , 90))))
-    NEXT 
+        PrintArray(aVetor)
 
-Return NIL
+    elseif nOpc = 2
 
-static Function Encontra(aVetor)
+        QOUT("")
 
-    local cAcha    := ""
-    local cProcura := ""
+        EncontraC(aVetor, cCarac)
 
-    Accept "Digite o caracter a ser pesquisado: " TO cAcha
-
-    IF EMPTY(aVetor)
-        QOUT("Vazio")
-    ELSE
+    elseif nOpc = 3
         
-        cProcura := ASCAN(aVetor, cAcha)
+        QOUT("")
 
-        IF cProcura = str(cAcha)
-            qout("Caractere esta no Vetor")
-        ELSE
-            qout("Caracter nao encontrado")
-        ENDIF
-    ENDIF
+        EncontraLast(aVetor, cCarac)
 
-Return NIL
+    elseif nOpc = 4
 
-static Function Repetido(aVetor)
+        QOUT("")
 
-    local nCount    := 0
-    local nRep      := 0
-    local nI        := 0
-    local nII       := 0
-    local nComp     := 0
-    local nRun      := 1
-    local nCheck    := 1
+        EncontraFirst(aVetor, cCarac)
 
-    FOR nCount := 1 TO 50
-        nRep := aVetor[nCount]
-        nI := 0
-        nCheck := 0
-        WHILE nCheck <= 50
-            nComp := ASCAN(aVetor, nRep, nRun)
-            IF nComp <> 0
-                nI++
-                nRun := nComp + 1
-            ENDIF
-            nCheck++
-        ENDDO
-        IF nI > 1
-            QOUT("Elemento " + AllTrim(str(nRep)) + " se repete " + AllTrim(str(nI)) + " vezes.")
-            nII++
-        ENDIF
-    NEXT nCount
+    else
+
+        ? "Opcao invalida"
+
+    endif
+
+
+return nil
+
+
+static function PreencheVet()
+
+    local aFill := {}
+    local nCount := 0
+    local nFill := 0
+    local cFill := ""
+
+    for nCount := 1 to 50
+
+        nFill := hb_randomint(65, 90)
+
+        cFill := CHR(nFill)
+
+        Aadd(aFill, cFill)
+
+    next nCount
     
-    IF nII = 0
-        QOUT("Nenhum elemento se repete")
-    ENDIF
-       
-Return NIL
 
+return aFill
+
+static function EncontraC(aVetor, cCarac)
+
+    local aStore := {}
+    local nCount := 0
+    local nStore := 1
+    local nSearch := 0
+    local cComp := ""
+    local nI := 0
+    local lRun := .T.
+    
+
+    while lRun
+
+        if nStore <= 50
+
+            nSearch := ASCAN(aVetor, cCarac, nStore)
+
+            if nSearch = 0
+
+                lRun := .F.
+
+            else
+                
+                Aadd(aStore, nSearch)
+                nStore := nSearch + 1
+            ENDIF
+
+        else
+            
+            lRun := .F.
+
+        endif
+        
+    enddo
+
+    ? "Ocorrencias do elemento"
+
+    for nCount := 1 to len(aStore)
+
+        QOUT("Ocorrencia " + AllTrim(str(nCount)) + ": " + AllTrim(str(aStore[nCount])))
+
+    next nCount
+
+return nil
+
+
+static function EncontraLast(aVetor, cCarac)
+
+    local nCount := 0
+    local nLast := 0
+    local lRun := .T.
+    local cComp := ""
+
+
+    while lRun
+
+        for nCount := 50 to 1 step -1
+
+            cComp := aVetor[nCount]
+
+            if cComp = cCarac
+
+                nLast := nCount
+                exit
+
+            endif
+
+        next nCount
+
+        lRun := .F.
+
+    enddo
+
+    if nLast = 0
+
+        ? "Elemento nao existente"
+
+    else
+        
+        QOUT("Ultima ocorrencia na posicao " + AllTrim(str(nCount)))
+
+    endif
+
+return nil
+
+
+static function EncontraFirst(aVetor, cCarac)
+
+    local nFirst := ASCAN(aVetor, cCarac)
+
+    if nFirst = 0
+
+        ? "Elemento nao existente"
+
+    else
+        
+        QOUT("Primeira ocorrencia na posicao " + AllTrim(str(nFirst)))
+
+    endif
+
+return nil
